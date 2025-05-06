@@ -6,6 +6,6 @@
 ## Installation
 
 ```bash
-git clone --recursive https://github.com/<ton-utilisateur>/SkyRank-Client.git
+git clone --recursive https://github.com/Turlure-Nael-23018992/SkyRank-Client.git
 cd SkyRank-Client
 pip install -r requirements.txt
