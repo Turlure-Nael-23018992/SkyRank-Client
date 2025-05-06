@@ -213,13 +213,16 @@ if __name__ == "__main__":
     json_path = "SkyRank/Assets/AlgoExecution/JsonFiles/RTuples8.json"  # Path to your input file
 
     # Define preferences: use Preference.MIN or Preference.MAX for each column
-    prefs = [Preference.MIN, Preference.MIN, Preference.MIN]
+
+    prefs = [Preference.MIN, Preference.MIN, Preference.MIN] # Adjust as needed
 
     # Create the appropriate DataObject wrapper (can be JsonObject, DictObject, or DbObject)
-    data_obj = JsonObject(json_path)
+
+    data_obj = JsonObject(json_path) # Change this to DictObject or DbObject as needed
 
     # Choose the algorithm to run (can also use CoskyAlgorithme, RankSky, etc.)
-    algorithm = CoskySQL
+
+    algorithm = CoskySQL # Change this to the desired algorithm
 
     # Create the engine instance and run the algorithm
     eng = SkyRankEngine(data_obj, algorithm, preferences=prefs)
