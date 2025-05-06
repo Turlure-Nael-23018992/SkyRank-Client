@@ -1,3 +1,6 @@
 [submodule "SkyRank"]
 	path = SkyRank
 	url = https://github.com/Turlure-Nael-23018992/SkyRank
+[submodule "external/BBS"]
+	path = external/BBS
+	url = https://github.com/Turlure-Nael-23018992/BBS-Python-3.x-.git
