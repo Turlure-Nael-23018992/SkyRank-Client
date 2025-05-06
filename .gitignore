@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.sqlite
+*.db
+tmp_*.db
+# Environnement virtuel local
+.venv/
