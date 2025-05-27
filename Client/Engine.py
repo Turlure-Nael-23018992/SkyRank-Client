@@ -1,26 +1,37 @@
-import os, sys, sqlite3, time
+import os
+import sys
+import sqlite3
+import time
 from pathlib import Path
 from typing import List
 
-# Patch sys.path to allow internal imports from SkyRank
-SKYRANK_PATH = os.path.join(os.path.dirname(__file__), '..', 'SkyRank')
-sys.path.insert(0, os.path.abspath(SKYRANK_PATH))
+# Ajoute SkyRank au path comme s'il était root (pour les imports relatifs internes à SkyRank)
+SKYRANK_ABS = Path(__file__).resolve().parent.parent / "SkyRank"
+sys.path.insert(0, str(SKYRANK_ABS))
 
-# Add external dependencies (Bbs and RTree)
-EXTERNAL_PATH = os.path.join(os.path.dirname(__file__), '..', 'external', 'BBS')
-sys.path.append(os.path.join(EXTERNAL_PATH, 'Bbs'))
-sys.path.append(os.path.join(EXTERNAL_PATH, 'RTree'))
+# 🛠️ Détection du chemin racine du projet
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, ".."))
+sys.path.insert(0, PROJECT_ROOT)
 
-# Force working directory to the project root (SkyRank-Client/)
-os.chdir(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# 📦 Imports Bbs & RTree depuis le dossier externe
+EXTERNAL_PATH = os.path.join(PROJECT_ROOT, "external", "BBS")
+sys.path.append(os.path.join(EXTERNAL_PATH, "Bbs"))
+sys.path.append(os.path.join(EXTERNAL_PATH, "RTree"))
 
-# Patch DataConverter to use absolute path for TestExecution.db
+# 🗂️ Forcer le working directory au dossier racine (utile pour chemins relatifs)
+os.chdir(PROJECT_ROOT)
+
+# ✅ Import patch pour DataConverter (redirection de TestExecution.db)
 from SkyRank.Utils.DataModifier.DataConverter import DataConverter
 from SkyRank.Utils.DataModifier.DictToDatabase import DictToDatabase
 
 original_init = DataConverter.__init__
 
+original_init = DataConverter.__init__
+
 def patched_init(self, data):
+    self.source = data
     if isinstance(data, dict) or (isinstance(data, str) and data.endswith('.json')):
         abs_db_path = os.path.abspath("SkyRank/Assets/AlgoExecution/DbFiles/TestExecution.db")
         self.data = data
@@ -30,6 +41,10 @@ def patched_init(self, data):
         self.DictToDatabase = None
 
 DataConverter.__init__ = patched_init
+
+
+DataConverter.__init__ = patched_init
+
 
 # Internal SkyRank imports
 from SkyRank.Algorithms.CoskySql import CoskySQL
@@ -117,7 +132,7 @@ class SkyRankEngine:
             self.algo_instance = CoskySQL(
                 "SkyRank/Assets/AlgoExecution/DbFiles/TestExecution.db", self.pref
             )
-        self.results = self.algo_instance.rows_res
+        self.results = self.algo_instance.dict
 
     def _start_cosky_algorithme(self):
         print_red("Starting CoskyAlgorithme")
@@ -143,7 +158,7 @@ class SkyRankEngine:
         else:
             self.r = {k: tuple(v) for k, v in self.r.items()}
             self.algo_instance = DpIdpDh(self.r)
-        self.results = self.algo_instance.
+        self.results = self.algo_instance.score
 
 
     def _start_ranksky(self):
@@ -159,6 +174,7 @@ class SkyRankEngine:
         else:
             self.r = {k: tuple(v) for k, v in self.r.items()}
             self.algo_instance = RankSky(self.r, self.pref)
+        self.results = self.algo_instance.score
 
     def _start_skyir(self):
         print_red("Starting SkyIR")
@@ -172,6 +188,7 @@ class SkyRankEngine:
             self.r = {k: tuple(v) for k, v in self.r.items()}
             self.algo_instance = SkyIR(self.r)
         self.algo_instance.skyIR(10)
+        self.results = self.algo_instance.result
 
     @staticmethod
     def _count_db_columns(db_path: str) -> int:
@@ -225,7 +242,7 @@ if __name__ == "__main__":
 
     data_obj = JsonObject(json_path) # Change this to DictObject or DbObject as needed
 
-    # Choose the algorithm to run (can also use CoskyAlgorithme, RankSky, etc.)
+    # Choose the algorithm to run (can also use CoskyAlgorithme, RankSky, DpIdpDh, SkyIR etc.)
 
     algorithm = CoskySQL # Change this to the desired algorithm
 
@@ -233,4 +250,5 @@ if __name__ == "__main__":
     eng = SkyRankEngine(data_obj, algorithm, preferences=prefs)
 
     # Access the internal result (depends on the algorithm structure)
+    print("Results:", eng.results)
 
