@@ -58,6 +58,7 @@ class SkyRankEngine:
     def __init__(self, data, algo, preferences):
         self.algo_instance = None
         self.pref = preferences
+        self.results = None
 
         # Detect input data type
         if isinstance(data, DictObject):
@@ -116,6 +117,7 @@ class SkyRankEngine:
             self.algo_instance = CoskySQL(
                 "SkyRank/Assets/AlgoExecution/DbFiles/TestExecution.db", self.pref
             )
+        self.results = self.algo_instance.rows_res
 
     def _start_cosky_algorithme(self):
         print_red("Starting CoskyAlgorithme")
@@ -128,6 +130,7 @@ class SkyRankEngine:
         else:
             self.r = {k: tuple(v) for k, v in self.r.items()}
             self.algo_instance = CoskyAlgorithme(self.r, self.pref)
+        self.results = self.algo_instance.s
 
     def _start_dp_idp_dh(self):
         print_red("Starting DpIdpDh")
@@ -140,6 +143,8 @@ class SkyRankEngine:
         else:
             self.r = {k: tuple(v) for k, v in self.r.items()}
             self.algo_instance = DpIdpDh(self.r)
+        self.results = self.algo_instance.
+
 
     def _start_ranksky(self):
         print_red("Starting RankSky")
@@ -228,5 +233,4 @@ if __name__ == "__main__":
     eng = SkyRankEngine(data_obj, algorithm, preferences=prefs)
 
     # Access the internal result (depends on the algorithm structure)
-    print(eng.algo_instance)
 
